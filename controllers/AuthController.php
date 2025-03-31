@@ -32,9 +32,9 @@ class AuthController {
             $user = $this->userModel->login($username, $password);
             if ($user) {
                 if (session_status() === PHP_SESSION_NONE) {
-                    session_start(); // Chỉ khởi tạo session khi đăng nhập thành công
+                    session_start(); 
                 }
-                $_SESSION['user'] = $user; // Lưu thông tin user vào session
+                $_SESSION['user'] = $user; 
                 
                 $role = $this->userModel->getRole($user['role_id']);
 
@@ -51,13 +51,14 @@ class AuthController {
         }
         require 'views/login.php';
     }
-
     
-    public function logout() {
-        // session_start(); 
+    public function logout() {    
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start(); 
+        }
     
-        session_unset(); // Xóa toàn bộ biến session
-        session_destroy(); // Hủy session hoàn toàn
+        session_unset();
+        session_destroy();
     
         if (isset($_COOKIE[session_name()])) {
             setcookie(session_name(), '', time() - 42000, '/');
@@ -65,10 +66,10 @@ class AuthController {
     
         session_write_close();
     
-        // Chuyển hướng về trang chính
-        header('Location: views/home.php');
+        header('Location: index.php?action=login');
         exit();
     }
+    
 
 }
 ?>
