@@ -92,10 +92,11 @@
                             </a>
                         </li>
                         <li class="nav-item mx-2">
-                            <a href="../index.php?action=login" class="btn btn-outline-danger btn-sm">ĐĂNG XUẤT</a>
+                            <a href="../index.php?action=logout" class="btn btn-outline-danger btn-sm">ĐĂNG XUẤT</a>
                         </li>
                     </ul>
                 </div>
             </nav>
         </div>
     </header>
+</body>
