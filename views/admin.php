@@ -1,4 +1,34 @@
-<!-- filepath: d:\XAMPP\htdocs\PHP\BaiCuoiKy\views\admin.php -->
+<?php
+session_start();
+require_once '../config.php';
+
+// Kiểm tra nếu không phải admin
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: home.php");
+    exit();
+}
+
+// Xử lý xóa mềm
+if (isset($_GET['action']) && $_GET['action'] === 'soft_delete' && isset($_GET['id'])) {
+    $user_id = $_GET['id'];
+    $stmt = $pdo->prepare("UPDATE user SET deleted_at = NOW() WHERE id = ?");
+    $stmt->execute([$user_id]);
+    header("Location: admin.php?section=user");
+    exit();
+}
+
+// Lấy danh sách user (không lấy những user đã bị xóa mềm)
+try {
+    $stmt = $pdo->query("SELECT u.*, r.name AS role_name FROM user u LEFT JOIN role r ON u.role_id = r.id WHERE u.deleted_at IS NULL");
+    $users = $stmt->fetchAll();
+} catch (PDOException $e) {
+    die("Lỗi truy vấn cơ sở dữ liệu: " . $e->getMessage());
+}
+
+// Xác định section hiện tại
+$section = isset($_GET['section']) ? $_GET['section'] : 'dashboard';
+?>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -108,7 +138,7 @@
                         <a class="dropdown-item" href="#">5 đánh giá mới</a>
                     </div>
                 </div>
-                <a href="../index.php?action=login" class="btn btn-light btn-sm">
+                <a href="../index.php?action=logout" class="btn btn-light btn-sm">
                     <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
                 </a>
             </div>
@@ -119,19 +149,19 @@
     <div class="sidebar">
         <div class="pt-4">
             <div class="list-group list-group-flush">
-                <a href="#" class="list-group-item list-group-item-action nav-link active">
+                <a href="admin.php?section=dashboard" class="list-group-item list-group-item-action nav-link <?php echo $section === 'dashboard' ? 'active' : ''; ?>">
                     <i class="fas fa-home me-3"></i>Dashboard
                 </a>
-                <a href="#" class="list-group-item list-group-item-action nav-link">
+                <a href="admin.php?section=users" class="list-group-item list-group-item-action nav-link <?php echo $section === 'users' ? 'active' : ''; ?>">
                     <i class="fas fa-users-cog me-3"></i>Quản lý người dùng
                 </a>
-                <a href="#" class="list-group-item list-group-item-action nav-link">
+                <a href="admin.php?section=products" class="list-group-item list-group-item-action nav-link <?php echo $section === 'products' ? 'active' : ''; ?>">
                     <i class="fas fa-box-open me-3"></i>Sản phẩm
                 </a>
-                <a href="#" class="list-group-item list-group-item-action nav-link">
+                <a href="admin.php?section=statistics" class="list-group-item list-group-item-action nav-link <?php echo $section === 'statistics' ? 'active' : ''; ?>">
                     <i class="fas fa-chart-bar me-3"></i>Thống kê
                 </a>
-                <a href="#" class="list-group-item list-group-item-action nav-link">
+                <a href="admin.php?section=settings" class="list-group-item list-group-item-action nav-link <?php echo $section === 'settings' ? 'active' : ''; ?>">
                     <i class="fas fa-cog me-3"></i>Cài đặt
                 </a>
             </div>
@@ -141,85 +171,130 @@
     <!-- Main Content -->
     <main class="main-content">
         <div class="container-fluid">
-            <h4 class="mb-4">Tổng quan hệ thống</h4>
-            
-            <div class="row g-4 mb-4">
-                <div class="col-xl-3 col-md-6">
-                    <div class="stat-card p-4">
-                        <div class="d-flex align-items-center">
-                            <div class="bg-primary p-3 rounded-circle me-3">
-                                <i class="fas fa-users text-white fa-2x"></i>
+            <?php if ($section === 'dashboard'): ?>
+                <h4 class="mb-4">Tổng quan hệ thống</h4>
+                
+                <div class="row g-4 mb-4">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stat-card p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary p-3 rounded-circle me-3">
+                                    <i class="fas fa-users text-white fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted mb-1">Người dùng</h6>
+                                    <h3 class="mb-0">1,234</h3>
+                                </div>
                             </div>
-                            <div>
-                                <h6 class="text-muted mb-1">Người dùng</h6>
-                                <h3 class="mb-0">1,234</h3>
+                            <div class="mt-3">
+                                <span class="text-success"><i class="fas fa-arrow-up"></i> 12%</span>
+                                <span class="text-muted ms-2">So với tháng trước</span>
                             </div>
                         </div>
-                        <div class="mt-3">
-                            <span class="text-success"><i class="fas fa-arrow-up"></i> 12%</span>
-                            <span class="text-muted ms-2">So với tháng trước</span>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stat-card p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success p-3 rounded-circle me-3">
+                                    <i class="fas fa-shopping-cart text-white fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted mb-1">Đơn hàng</h6>
+                                    <h3 class="mb-0">356</h3>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <span class="text-success"><i class="fas fa-arrow-up"></i> 24%</span>
+                                <span class="text-muted ms-2">Đang xử lý: 15</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stat-card p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-warning p-3 rounded-circle me-3">
+                                    <i class="fas fa-dollar-sign text-white fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted mb-1">Doanh thu</h6>
+                                    <h3 class="mb-0">$12,345</h3>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <span class="text-danger"><i class="fas fa-arrow-down"></i> 8%</span>
+                                <span class="text-muted ms-2">Tháng này</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stat-card p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-info p-3 rounded-circle me-3">
+                                    <i class="fas fa-chart-line text-white fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted mb-1">Hiệu suất</h6>
+                                    <h3 class="mb-0">94%</h3>
+                                </div>
+                            </div>
+                            <div class="progress mt-3" style="height: 6px;">
+                                <div class="progress-bar bg-info" style="width: 94%"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-xl-3 col-md-6">
-                    <div class="stat-card p-4">
-                        <div class="d-flex align-items-center">
-                            <div class="bg-success p-3 rounded-circle me-3">
-                                <i class="fas fa-shopping-cart text-white fa-2x"></i>
-                            </div>
-                            <div>
-                                <h6 class="text-muted mb-1">Đơn hàng</h6>
-                                <h3 class="mb-0">356</h3>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <span class="text-success"><i class="fas fa-arrow-up"></i> 24%</span>
-                            <span class="text-muted ms-2">Đang xử lý: 15</span>
-                        </div>
-                    </div>
+                <div class="chart-container mb-4">
+                    <h5 class="mb-4">Biểu đồ doanh thu</h5>
+                    <canvas id="revenueChart"></canvas>
                 </div>
 
-                <div class="col-xl-3 col-md-6">
-                    <div class="stat-card p-4">
-                        <div class="d-flex align-items-center">
-                            <div class="bg-warning p-3 rounded-circle me-3">
-                                <i class="fas fa-dollar-sign text-white fa-2x"></i>
-                            </div>
-                            <div>
-                                <h6 class="text-muted mb-1">Doanh thu</h6>
-                                <h3 class="mb-0">$12,345</h3>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <span class="text-danger"><i class="fas fa-arrow-down"></i> 8%</span>
-                            <span class="text-muted ms-2">Tháng này</span>
-                        </div>
-                    </div>
-                </div>
+            <?php elseif ($section === 'users'): ?>
+                <!-- Phần Quản lý người dùng -->
+                <h4 class="mb-4">Quản lý người dùng</h4>
+                <?php if (empty($users)): ?>
+                    <p>Không có người dùng nào để hiển thị.</p>
+                <?php else: ?>
+                    <table class="table table-striped table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Ảnh</th>
+                                <th>Vai trò</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($users as $user): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($user['id']); ?></td>
+                                    <td><?php echo htmlspecialchars($user['username']); ?></td>
+                                    <td><?php echo htmlspecialchars($user['email']); ?></td>
+                                    <td>
+                                        <?php if ($user['avatar']): ?>
+                                            <img src="<?php echo htmlspecialchars($user['avatar']); ?>" alt="Avatar" width="50">
+                                        <?php else: ?>
+                                            Không có ảnh
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($user['role_name'] ?? 'Không xác định'); ?></td>
+                                    <td>
+                                        <a href="admin.php?section=users&action=soft_delete&id=<?php echo $user['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa mềm user này?')">Xóa mềm</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php endif; ?>
 
-                <div class="col-xl-3 col-md-6">
-                    <div class="stat-card p-4">
-                        <div class="d-flex align-items-center">
-                            <div class="bg-info p-3 rounded-circle me-3">
-                                <i class="fas fa-chart-line text-white fa-2x"></i>
-                            </div>
-                            <div>
-                                <h6 class="text-muted mb-1">Hiệu suất</h6>
-                                <h3 class="mb-0">94%</h3>
-                            </div>
-                        </div>
-                        <div class="progress mt-3" style="height: 6px;">
-                            <div class="progress-bar bg-info" style="width: 94%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="chart-container mb-4">
-                <h5 class="mb-4">Biểu đồ doanh thu</h5>
-                <canvas id="revenueChart"></canvas>
-            </div>
+            <?php else: ?>
+                <h4 class="mb-4">Chưa hỗ trợ section này</h4>
+            <?php endif; ?>
         </div>
     </main>
 
@@ -227,29 +302,31 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Biểu đồ doanh thu
-        const ctx = document.getElementById('revenueChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6'],
-                datasets: [{
-                    label: 'Doanh thu (triệu)',
-                    data: [12, 19, 3, 5, 2, 3],
-                    borderColor: '#6366f1',
-                    tension: 0.4,
-                    fill: true,
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)'
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
+        const ctx = document.getElementById('revenueChart')?.getContext('2d');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6'],
+                    datasets: [{
+                        label: 'Doanh thu (triệu)',
+                        data: [12, 19, 3, 5, 2, 3],
+                        borderColor: '#6366f1',
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                    }
                 }
-            }
-        });
+            });
+        }
     </script>
 </body>
 </html>
