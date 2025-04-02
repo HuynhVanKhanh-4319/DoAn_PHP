@@ -1,5 +1,11 @@
+# Lưu ý:
+## Tải thư viện Google-api-php-client tại đây: [Link](https://github.com/googleapis/google-api-php-client) (Lưu ý phải tải composer trước)
+Sau khi clone thư viện thì xóa google-api-php-client cũ trong thư mục libs và clone thư viện mới về bỏ vào libs sau khi bỏ vào libs thì mở cmd cd tới libs/google-api-php-client chạy lệnh composer install
+
+
 # File config.php
-``` <?php
+```
+<?php
 $host = 'localhost';
 $dbname = 'doancuoiky';
 $username = 'root';
