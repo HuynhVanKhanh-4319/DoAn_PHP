@@ -5,6 +5,10 @@ class AuthController {
     private $userModel;
 
     public function __construct($pdo) {
+        // Đảm bảo session được khởi tạo
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         $this->userModel = new User($pdo);
     }
 
@@ -31,12 +35,13 @@ class AuthController {
 
             $user = $this->userModel->login($username, $password);
             if ($user) {
-                if (session_status() === PHP_SESSION_NONE) {
-                    session_start(); 
-                }
-                $_SESSION['user'] = $user; 
-                
+                // Lưu thông tin user vào session
+                $_SESSION['user_id'] = $user['id']; // Lưu user_id riêng biệt
+                $_SESSION['user'] = $user; // Lưu toàn bộ thông tin user (tùy chọn)
+
+                // Lấy role và lưu vào session
                 $role = $this->userModel->getRole($user['role_id']);
+                $_SESSION['role'] = $role['name']; // Lưu role vào session
 
                 // Điều hướng theo quyền
                 if ($role['name'] === 'admin') {
@@ -53,11 +58,16 @@ class AuthController {
     }
     
     public function logout() {    
-        session_start(); 
+        // Đảm bảo session được khởi tạo trước khi hủy
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
     
+        // Hủy session
         session_unset();
         session_destroy();
     
+        // Xóa cookie session (nếu có)
         if (isset($_COOKIE[session_name()])) {
             setcookie(session_name(), '', time() - 42000, '/');
         }
@@ -67,7 +77,5 @@ class AuthController {
         header('Location: index.php?action=login');
         exit();
     }
-    
-
 }
 ?>

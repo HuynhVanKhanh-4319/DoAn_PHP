@@ -8,38 +8,31 @@ class User {
         $this->pdo = $pdo;
     }
 
-    // public function register($username, $password, $email) {
-    //     $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-    //     $stmt = $this->pdo->prepare("INSERT INTO user (username, password, email, role_id) VALUES (?, ?, ?, ?)");
-    //     return $stmt->execute([$username, $hashedPassword, $email, 2]); // Default role_id = 2 (user)
-    // }
     public function register($username, $password, $email) {
-        if ($password) {
-            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-        } else {
-            $hashedPassword = ''; 
+        // Kiểm tra username hoặc email đã tồn tại chưa
+        $stmt = $this->pdo->prepare("SELECT * FROM user WHERE username = ? OR email = ?");
+        $stmt->execute([$username, $email]);
+        if ($stmt->fetch()) {
+            return false; // Username hoặc email đã tồn tại
         }
+
+        // Kiểm tra password không rỗng
+        if (empty($password)) {
+            return false; // Password không được rỗng
+        }
+
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
         $stmt = $this->pdo->prepare("INSERT INTO user (username, password, email, role_id) VALUES (?, ?, ?, ?)");
-        return $stmt->execute([$username, $hashedPassword, $email, 2]);
+        return $stmt->execute([$username, $hashedPassword, $email, 2]); // Default role_id = 2 (user)
     }
-    
 
     public function login($username, $password) {
-        $stmt = $this->pdo->prepare("SELECT * FROM user WHERE username = ?");
+        $stmt = $this->pdo->prepare("SELECT * FROM user WHERE username = ? AND deleted_at IS NULL");
         $stmt->execute([$username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user && password_verify($password, $user['password'])) {
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start(); // Chỉ tạo session khi đăng nhập
-            }
-            $_SESSION['user'] = [
-                'id' => $user['id'],
-                'username' => $user['username'],
-                'email' => $user['email'],
-                'role_id' => $user['role_id']
-            ];
-            return $_SESSION['user']; // Trả về thông tin user
+            return $user; // Trả về thông tin user
         }
         return false;
     }
@@ -51,15 +44,22 @@ class User {
     }
 
     public function getUserByEmail($email) {
-        $stmt = $this->pdo->prepare("SELECT * FROM user WHERE email = ?");
+        $stmt = $this->pdo->prepare("SELECT * FROM user WHERE email = ? AND deleted_at IS NULL");
         $stmt->execute([$email]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function registerGoogleUser($username, $email, $avatar) {
-        $stmt = $this->pdo->prepare("INSERT INTO user (username, email, avatar, role_id) VALUES (?, ?, ?, ?)");
-        return $stmt->execute([$username, $email, $avatar, 2]);
+        // Kiểm tra email đã tồn tại chưa
+        $existingUser = $this->getUserByEmail($email);
+        if ($existingUser) {
+            return false; // Email đã tồn tại
+        }
+
+        // Cột password là NOT NULL, cần cung cấp giá trị mặc định
+        $defaultPassword = password_hash(uniqid(), PASSWORD_BCRYPT); // Tạo mật khẩu ngẫu nhiên
+        $stmt = $this->pdo->prepare("INSERT INTO user (username, email, avatar, password, role_id) VALUES (?, ?, ?, ?, ?)");
+        return $stmt->execute([$username, $email, $avatar, $defaultPassword, 2]);
     }
-    
 }
 ?>

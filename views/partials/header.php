@@ -91,12 +91,23 @@
                                 </span>
                             </a>
                         </li>
-                        <li class="nav-item mx-2">
-                            <a href="../index.php?action=logout" class="btn btn-outline-danger btn-sm">ĐĂNG XUẤT</a>
-                        </li>
+
+                        <!-- Thêm nút "Cập nhật thông tin" cho user đã đăng nhập -->
+                        
+                            <li class="nav-item mx-2">
+                                <a href="update_profile.php" class="nav-link">CẬP NHẬT THÔNG TIN</a>
+                            </li>
+                        
+
+                        <!-- Nút Đăng xuất -->
+                        
+                            <li class="nav-item mx-2">
+                                <a href="../index.php?action=logout" class="btn btn-outline-danger btn-sm">ĐĂNG XUẤT</a>
+                            </li>
+                        
+                            
                     </ul>
                 </div>
             </nav>
         </div>
     </header>
-</body>
