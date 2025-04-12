@@ -119,17 +119,17 @@
     <div class="sidebar">
         <div class="pt-4">
             <div class="list-group list-group-flush">
-                <a href="#" class="list-group-item list-group-item-action nav-link active">
+                <a href="views/admin.php" class="list-group-item list-group-item-action nav-link active">
                     <i class="fas fa-home me-3"></i>Dashboard
                 </a>
-                <a href="#" class="list-group-item list-group-item-action nav-link">
-                    <i class="fas fa-users-cog me-3"></i>Quản lý người dùng
+                <a href="category/index.php" class="list-group-item list-group-item-action nav-link">
+                    <i class="fas fa-users-cog me-3"></i>Quản lý thể loại
                 </a>
-                <a href="#" class="list-group-item list-group-item-action nav-link">
-                    <i class="fas fa-box-open me-3"></i>Sản phẩm
+                <a href="product/index.php" class="list-group-item list-group-item-action nav-link">
+                    <i class="fas fa-box-open me-3"></i>Quản lý sản phẩm
                 </a>
-                <a href="#" class="list-group-item list-group-item-action nav-link">
-                    <i class="fas fa-chart-bar me-3"></i>Thống kê
+                <a href="order/index.php" class="list-group-item list-group-item-action nav-link">
+                    <i class="fas fa-chart-bar me-3"></i>Quản lý đặt hàng
                 </a>
                 <a href="#" class="list-group-item list-group-item-action nav-link">
                     <i class="fas fa-cog me-3"></i>Cài đặt

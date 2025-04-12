@@ -1,6 +1,7 @@
 <!-- filepath: d:\XAMPP\htdocs\PHP\BaiCuoiKy\views\login.php -->
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,8 +39,8 @@
         .neon-text {
             color: #fff;
             text-shadow: 0 0 10px #0ff,
-                         0 0 20px #0ff,
-                         0 0 30px #0ff;
+                0 0 20px #0ff,
+                0 0 30px #0ff;
         }
 
         .form-control {
@@ -90,6 +91,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="row justify-content-center">
@@ -98,7 +100,7 @@
                     <div class="login-header">
                         <h2 class="neon-text mb-0"><i class="fas fa-robot me-2"></i>ĐĂNG NHẬP</h2>
                     </div>
-                    
+
                     <div class="card-body p-4">
                         <form method="POST" action="">
                             <!-- Username Input -->
@@ -108,12 +110,12 @@
                                     <span class="input-group-text bg-transparent border-end-0">
                                         <i class="fas fa-user text-primary"></i>
                                     </span>
-                                    <input type="text" 
-                                           class="form-control border-start-0" 
-                                           id="username" 
-                                           name="username" 
-                                           placeholder="Nhập tài khoản..."
-                                           required>
+                                    <input type="text"
+                                        class="form-control border-start-0"
+                                        id="username"
+                                        name="username"
+                                        placeholder="Nhập tài khoản..."
+                                        required>
                                 </div>
                             </div>
 
@@ -124,12 +126,12 @@
                                     <span class="input-group-text bg-transparent border-end-0">
                                         <i class="fas fa-lock text-primary"></i>
                                     </span>
-                                    <input type="password" 
-                                           class="form-control border-start-0" 
-                                           id="password" 
-                                           name="password" 
-                                           placeholder="Nhập mật khẩu..."
-                                           required>
+                                    <input type="password"
+                                        class="form-control border-start-0"
+                                        id="password"
+                                        name="password"
+                                        placeholder="Nhập mật khẩu..."
+                                        required>
                                 </div>
                             </div>
 
@@ -146,6 +148,12 @@
                                     </a>
                                 </p>
                             </div>
+                            <div class="text-center mt-4">
+                                <a href="google_login.php" class="btn btn-danger w-100 text-uppercase">
+                                    <i class="fab fa-google me-2"></i> Đăng nhập bằng Google
+                                </a>
+                            </div>
+
                         </form>
                     </div>
                 </div>
@@ -158,4 +166,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

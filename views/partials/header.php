@@ -1,6 +1,6 @@
-<!-- filepath: d:\XAMPP\htdocs\PHP\BaiCuoiKy\views\partials\header.php -->
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,18 +13,18 @@
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
             background: linear-gradient(45deg, #111, #1a1a1a);
         }
-        
+
         .nav-link {
             position: relative;
             color: #fff !important;
             transition: 0.3s;
         }
-        
+
         .nav-link:hover {
             color: #0ff !important;
             text-shadow: 0 0 10px #0ff;
         }
-        
+
         .nav-link::after {
             content: '';
             position: absolute;
@@ -35,11 +35,11 @@
             background: #0ff;
             transition: 0.3s;
         }
-        
+
         .nav-link:hover::after {
             width: 100%;
         }
-        
+
         .brand-logo {
             font-family: 'Arial Black', sans-serif;
             letter-spacing: 2px;
@@ -47,27 +47,28 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        
+
         .cart-icon {
             transition: 0.3s;
         }
-        
+
         .cart-icon:hover {
             transform: scale(1.1);
             filter: drop-shadow(0 0 5px #0ff);
         }
     </style>
 </head>
+
 <body class="bg-dark">
     <header class="header-glow fixed-top">
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-dark">
                 <a class="navbar-brand brand-logo h2 mb-0" href="home.php">ROBOT WORKSHOP</a>
-                
+
                 <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                
+
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li class="nav-item mx-2">
@@ -83,19 +84,32 @@
                             <a href="#" class="nav-link">HƯỚNG DẪN</a>
                         </li>
                         <li class="nav-item mx-2">
-                            <a href="cart.php" class="nav-link position-relative">
+                            <a href="../index.php?action=order_history" class="nav-link">LỊCH SỬ ĐẶT HÀNG</a>
+                        </li>
+                        <li class="nav-item mx-2">
+                            <a href="/PHP/DoAn_PHP/index.php?action=cart" class="nav-link position-relative">
                                 <i class="bi bi-cart3 cart-icon fs-5"></i>
-                                <span class="position-absolute top-0 start-100 translate-middle badge bg-danger">
-                                    <?php echo isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0; ?>
-                                    <span class="visually-hidden">Cart items</span>
+                                <span class="position-absolute top-0 start-100 translate-middle badge bg-danger" id="cart-count">
+                                    <?php
+                                    session_start();
+                                    $cartCount = 0;
+                                    if (isset($_SESSION['cart'])) {
+                                        foreach ($_SESSION['cart'] as $item) {
+                                            $cartCount += $item['quantity'];
+                                        }
+                                    }
+                                    echo $cartCount;
+                                    ?>
                                 </span>
                             </a>
                         </li>
+
                         <li class="nav-item mx-2">
-                            <a href="../index.php?action=login" class="btn btn-outline-danger btn-sm">ĐĂNG XUẤT</a>
+                            <a href="../index.php?action=logout" class="btn btn-outline-danger btn-sm">ĐĂNG XUẤT</a>
                         </li>
                     </ul>
                 </div>
             </nav>
         </div>
     </header>
+</body>
